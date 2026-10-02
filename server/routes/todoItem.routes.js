@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
 })
 
 //Update a ToDo Item
-router.put("/:id", async (res, req) => {
+router.put("/:id", async (err, req, res, next) => {
     try {
         const todoToUpdate = await TodoItem.findById(req.params.id);
         if (!todoToUpdate) return res.status(400).json({message: "To Do Not Found for Given ID"});
@@ -48,7 +48,7 @@ router.put("/:id", async (res, req) => {
 })
 
 //Toggle ToDo Item Status
-router.patch("/:id/done", async (res, req) => {
+router.patch("/:id/done", async (req, res) => {
     try {
         const todoToUpdate = await TodoItem.findById(req.params.id);
         if (!todoToUpdate) return res.status(400).json({message: "To Do Not Found for Given ID"});
