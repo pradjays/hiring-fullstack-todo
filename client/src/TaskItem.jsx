@@ -25,7 +25,8 @@ function TaskItem (props) {
             setName('');
             setDescription('');
             toast.success("To Do Updated!")
-            props.fetchToDoList();
+            props.setTodoList(props.todoList.map(item => item._id === id ? response.data : item));
+            props.setInitialTodoList(props.initialTodoList.map(item => item._id === id ? response.data : item));
         } catch (error) {
             console.log("There was an error updating a to do: ", error)
             toast.error("Error updating To Do. Please try again.")
@@ -34,9 +35,10 @@ function TaskItem (props) {
 
     const deleteToDo = async (id) => {
         try {
-            const response = await axios.delete(`api/todos/${id}`)
+            await axios.delete(`api/todos/${id}`)
             toast.success("To Do Deleted!")
-            props.fetchToDoList();
+            props.setTodoList(props.todoList.filter(item => item._id !== id));
+            props.setInitialTodoList(props.initialTodoList.filter(item => item._id !== id));
         } catch (e) {
             console.log("There was an error deleting a to do: ", e)
             toast.error("Error deleting To Do. Please try again.")
@@ -46,8 +48,9 @@ function TaskItem (props) {
     const markAsDone = async (id) => {
         try {
             const response = await axios.patch(`api/todos/${id}/done`);
-            toast.success("Marked as done!")
-            props.fetchToDoList();
+            toast.success(props.todo.completed ? "Marked as Undone!" : "Marked as Done!");
+            props.setTodoList(props.todoList.map(item => item._id === id ? response.data : item));
+            props.setInitialTodoList(props.initialTodoList.map(item => item._id === id ? response.data : item));
         } catch (e) {
             console.log("There was an error deleting a to do: ", e)
             toast.error("Error marking To Do as Done. Please try again.")
@@ -60,11 +63,13 @@ function TaskItem (props) {
             <div className={`flex items-center w-2/4 border border-gray-400 bg-gray-700
             ${props.todo.completed ? `line-through text-gray-200` : `hover:scale-101`} rounded-lg shadow-2xl px-4 transition 
             duration-300 ease-in-out`}>
-                { props.todo.completed && (
-                    <div className="p-4 text-purple">
-                        <FaCheckCircle className="stroke-current text-purple-600 text-2xl" />
-                    </div>
-                )}
+                {/*Mark as Done/Undone Button*/}
+                <div className={`p-4 stroke-current ${props.todo.completed ? `text-purple-700` : `text-gray-500`} text-2xl cursor-pointer
+                        hover:text-purple-400`}>
+                    <button className="hover:scale-101" onClick={() => markAsDone(props.todo._id)}>
+                        <FaCheckCircle />
+                    </button>
+                </div>
 
                 {/*Show Task Name and Description when not editing*/}
                 { !isEditing && (
@@ -80,6 +85,7 @@ function TaskItem (props) {
                     </div>
                 )}
 
+                {/*Show Input Boxes When Editing*/}
                 { isEditing && (
                     <div className="flex-1 transition transform">
                         <input className="w-full p-2 outline-none bg-gray-600 text-gray-300 rounded-lg mt-3 mb-3
@@ -98,16 +104,6 @@ function TaskItem (props) {
                 )}
 
                 <div className="flex p-4">
-                    {/*Mark as Done Button*/}
-                    { !props.todo.completed && (
-                        <div className="p-2 stroke-current text-green-700 text-2xl cursor-pointer
-                    hover:text-green-400">
-                            <button className="hover:animate-pulse" onClick={() => markAsDone(props.todo._id)}>
-                                <FaCheckCircle />
-                            </button>
-                        </div>
-                    )}
-
                     {/*Edit and Save Buttons for Task*/}
                     <div className="p-2 stroke-current text-gray-400 text-2xl cursor-pointer
                     hover:text-gray-100">
@@ -129,6 +125,8 @@ function TaskItem (props) {
                         )}
 
                     </div>
+
+                    {/*Delete Button for Task*/}
                     <div className="p-2 stroke-current text-red-400 text-2xl cursor-pointer
                     hover:text-red-300">
                         <button className="hover:animate-pulse" onClick={() => deleteToDo(props.todo._id)}>

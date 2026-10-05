@@ -61,7 +61,7 @@ function App() {
               <TaskList todoList={todoList}
                         setTodoList={setTodoList}
                         initialTodoList={initialTodoList}
-                        fetchToDoList={fetchToDoList}
+                        setInitialTodoList={setInitialTodoList}
                         loading={loading}
               />
       </div>

@@ -1,5 +1,4 @@
 import TaskItem from "./TaskItem";
-import toast, { Toaster } from 'react-hot-toast';
 
 function TaskList(props) {
     const total = props.initialTodoList.length;
@@ -39,10 +38,23 @@ function TaskList(props) {
                     </div>
                 </div>
             </div>
+
+            { props.todoList.length <=0 && (
+                <div className="w-full justify-items-center flex items-center justify-center p-3 text-xl text-gray-300">
+                    No To Dos Added. Add one to get started!
+                </div>
+            ) }
+
             {!props.loading && (
                 <div className="w-full justify-items-center content-center justify-center p-3">
                     {props.todoList.length > 0 && (
-                        props.todoList.map((todo) => (<TaskItem key={todo._id} todo={todo} fetchToDoList={props.fetchToDoList} />))
+                        props.todoList.map((todo) => (
+                            <TaskItem key={todo._id} todo={todo}
+                                      todoList={props.todoList}
+                                      setTodoList={props.setTodoList}
+                                      initialTodoList={props.initialTodoList}
+                                      setInitialTodoList={props.setInitialTodoList}
+                            />))
                     )}
                 </div>
             )
